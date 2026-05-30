@@ -1,5 +1,9 @@
 # E-commerce Homework
 
+[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](COVERAGE.md)
+
+**Репозиторий:** [github.com/kartonka1/internet_shop_v1](https://github.com/kartonka1/internet_shop_v1)
+
 Учебный проект — ядро интернет-магазина на ООП (урок 14.1). Реализованы сущности каталога без платежей: товары и категории.
 
 ## Функциональность
@@ -13,7 +17,8 @@
 ## Установка
 
 ```bash
-cd ecommerce-homework
+git clone https://github.com/kartonka1/internet_shop_v1.git
+cd internet_shop_v1
 poetry install
 ```
 
@@ -29,7 +34,11 @@ poetry run python main.py
 poetry run pytest
 ```
 
-Отчёт о покрытии сохраняется в каталог `htmlcov/` (откройте `htmlcov/index.html` в браузере).
+Минимальное покрытие: **75%** (настроено в `pyproject.toml`, текущее — **100%**).
+
+- [`COVERAGE.md`](COVERAGE.md) — сводный отчёт о покрытии в репозитории
+- [`coverage.json`](coverage.json) — машиночитаемый отчёт (обновляется при запуске тестов)
+- `htmlcov/index.html` — подробный HTML-отчёт (генерируется локально, не коммитится)
 
 ## Линтер
 
