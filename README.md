@@ -4,15 +4,15 @@
 
 **Репозиторий:** [github.com/kartonka1/internet_shop_v1](https://github.com/kartonka1/internet_shop_v1)
 
-Учебный проект — ядро интернет-магазина на ООП (урок 14.1). Реализованы сущности каталога без платежей: товары и категории.
+Учебный проект — ядро интернет-магазина на ООП (уроки 14.1–14.2). Реализованы сущности каталога без платежей: товары и категории с контролируемым доступом к данным.
 
 ## Функциональность
 
-- `src/product.py` — класс `Product` с полями `name`, `description`, `price`, `quantity`.
-- `src/category.py` — класс `Category` с полями `name`, `description`, `products` (список объектов `Product`).
-- Атрибуты класса `Category`: `category_count` и `product_count` — увеличиваются при каждом создании категории (товары считаются по длине списка `products`).
+- `src/product.py` — класс `Product`: приватная цена (`@property` / `@price.setter`), класс-метод `new_product()`, объединение дубликатов по имени.
+- `src/category.py` — класс `Category`: приватный список товаров, `add_product()`, геттер `products` (строка для вывода каталога).
+- Атрибуты класса `Category`: `category_count` и `product_count` — счётчики категорий и добавленных товаров.
 - `src/utils/products_loader.py` — загрузка категорий и товаров из `data/products.json`.
-- `main.py` — демонстрация из задания (`14.1_main.py`).
+- `main.py` — демонстрация из задания (`14.2_main.py`).
 
 ## Установка
 
@@ -55,6 +55,7 @@ from src.utils.products_loader import load_categories_from_json
 
 product = Product("Наушники", "Беспроводные", 19990.0, 8)
 category = Category("Аудио", "Звуковая техника", [product])
+print(category.products)
 
 categories = load_categories_from_json("data/products.json")
 print(Category.category_count, Category.product_count)
@@ -64,4 +65,5 @@ print(Category.category_count, Category.product_count)
 
 - `main` — стабильная ветка
 - `develop` — интеграция
-- `feature/homework-product-category` — ветка с домашним заданием
+- `feature/homework-product-category` — ДЗ 14.1 (классы Product и Category)
+- `feature/homework-14-2-access-modifiers` — ДЗ 14.2 (приватные атрибуты, property, classmethod)

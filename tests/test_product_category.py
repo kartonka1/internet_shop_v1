@@ -32,6 +32,95 @@ def test_product_initialization() -> None:
     assert product.quantity == 14
 
 
+def test_product_price_setter_rejects_non_positive(capsys: pytest.CaptureFixture[str]) -> None:
+    product = Product("Товар", "Описание", 1000.0, 1)
+
+    product.price = 0
+    captured = capsys.readouterr()
+    assert product.price == 1000.0
+    assert captured.out == "Цена не должна быть нулевая или отрицательная\n"
+
+    product.price = -10
+    captured = capsys.readouterr()
+    assert product.price == 1000.0
+    assert captured.out == "Цена не должна быть нулевая или отрицательная\n"
+
+
+def test_product_price_setter_accepts_positive() -> None:
+    product = Product("Товар", "Описание", 1000.0, 1)
+
+    product.price = 1500.0
+
+    assert product.price == 1500.0
+
+
+def test_product_price_setter_decrease_requires_confirmation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    product = Product("Товар", "Описание", 1000.0, 1)
+
+    monkeypatch.setattr("builtins.input", lambda _: "n")
+    product.price = 500.0
+    assert product.price == 1000.0
+
+    monkeypatch.setattr("builtins.input", lambda _: "y")
+    product.price = 500.0
+    assert product.price == 500.0
+
+
+def test_product_new_product_from_dict() -> None:
+    product = Product.new_product(
+        {
+            "name": "Планшет",
+            "description": "10 дюймов",
+            "price": 25000.0,
+            "quantity": 3,
+        }
+    )
+
+    assert product.name == "Планшет"
+    assert product.description == "10 дюймов"
+    assert product.price == 25000.0
+    assert product.quantity == 3
+
+
+def test_product_new_product_merges_duplicate() -> None:
+    existing = Product("Наушники", "Беспроводные", 19990.0, 5)
+    products = [existing]
+
+    merged = Product.new_product(
+        {
+            "name": "Наушники",
+            "description": "Другие",
+            "price": 15000.0,
+            "quantity": 2,
+        },
+        products,
+    )
+
+    assert merged is existing
+    assert existing.quantity == 7
+    assert existing.price == 19990.0
+
+    Product.new_product(
+        {
+            "name": "Наушники",
+            "description": "Другие",
+            "price": 25000.0,
+            "quantity": 1,
+        },
+        products,
+    )
+    assert existing.quantity == 8
+    assert existing.price == 25000.0
+
+
+def test_product_format_for_catalog_fractional_price() -> None:
+    product = Product("Молоко", "2.5%", 89.90, 12)
+
+    assert product.format_for_catalog() == "Молоко, 89.9 руб. Остаток: 12 шт.\n"
+
+
 def test_category_initialization() -> None:
     product = Product("Наушники", "Беспроводные", 19990.0, 8)
     category = Category(
@@ -42,8 +131,17 @@ def test_category_initialization() -> None:
 
     assert category.name == "Аудио"
     assert category.description == "Звуковая техника"
-    assert category.products == [product]
-    assert isinstance(category.products[0], Product)
+    assert category.products == "Наушники, 19990 руб. Остаток: 8 шт.\n"
+
+
+def test_category_add_product() -> None:
+    category = Category("Аудио", "Описание", [])
+    product = Product("Колонка", "Портативная", 4990.0, 4)
+
+    category.add_product(product)
+
+    assert category.products == "Колонка, 4990 руб. Остаток: 4 шт.\n"
+    assert Category.product_count == 1
 
 
 def test_category_count() -> None:
@@ -70,10 +168,9 @@ def test_load_categories_from_json() -> None:
 
     assert len(categories) == 2
     assert categories[0].name == "Смартфоны"
-    assert len(categories[0].products) == 3
-    assert categories[0].products[0].name == "Samsung Galaxy C23 Ultra"
-    assert categories[0].products[0].price == 180000.0
+    assert categories[0].products.count("шт.") == 3
+    assert "Samsung Galaxy C23 Ultra, 180000 руб. Остаток: 5 шт." in categories[0].products
     assert categories[1].name == "Телевизоры"
-    assert categories[1].products[0].quantity == 7
+    assert "Остаток: 7 шт." in categories[1].products
     assert Category.category_count == 2
     assert Category.product_count == 4
