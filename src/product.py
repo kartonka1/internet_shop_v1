@@ -57,7 +57,4 @@ class Product:
 
     def format_for_catalog(self) -> str:
         """Строковое представление товара для геттера категории."""
-        return (
-            f"{self.name}, {_format_price(self.price)} руб. "
-            f"Остаток: {self.quantity} шт.\n"
-        )
+        return f"{self.name}, {_format_price(self.price)} руб. " f"Остаток: {self.quantity} шт.\n"

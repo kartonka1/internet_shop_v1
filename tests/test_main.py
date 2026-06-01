@@ -1,9 +1,9 @@
 """Тесты для демонстрации Product/Category в main.py."""
 
+import runpy
 from pathlib import Path
 
 import pytest
-import runpy
 
 from src.category import Category
 
@@ -15,13 +15,19 @@ def reset_category_counters() -> None:
     Category.product_count = 0
 
 
-def test_main_runs_without_error(capsys: pytest.CaptureFixture[str]) -> None:
+def test_main_runs_without_error(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """main.py (14.2) запрашивает подтверждение при понижении цены."""
+    monkeypatch.setattr("builtins.input", lambda _: "y")
     main_path = Path(__file__).resolve().parents[1] / "main.py"
     runpy.run_path(str(main_path), run_name="__main__")
     out = capsys.readouterr().out
 
     assert "Samsung Galaxy S23 Ultra" in out
-    assert "True" in out
-    assert "Телевизоры" in out
-    assert "2" in out
-    assert "4" in out
+    assert "Остаток: 5 шт." in out
+    assert '55" QLED 4K' in out
+    assert "4\n" in out or out.strip().endswith("4")
+    assert "800" in out
+    assert "Цена не должна быть нулевая или отрицательная" in out
