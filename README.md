@@ -8,7 +8,7 @@
 
 ## Функциональность
 
-- `src/product.py` — класс `Product`: приватная цена (`@property` / `@price.setter`), класс-метод `new_product()`, объединение дубликатов по имени.
+- `src/product.py` — класс `Product`: приватная цена (`@property` / `@price.setter`), класс-метод `new_product(cls, product_dict)`.
 - `src/category.py` — класс `Category`: приватный список товаров, `add_product()`, геттер `products` (строка для вывода каталога).
 - Атрибуты класса `Category`: `category_count` и `product_count` — счётчики категорий и добавленных товаров.
 - `src/utils/products_loader.py` — загрузка категорий и товаров из `data/products.json`.
