@@ -37,17 +37,8 @@ class Product:
         self.__price = value
 
     @classmethod
-    def new_product(cls, product_dict: dict, products: list["Product"] | None = None) -> "Product":
-        """Создаёт товар из словаря; при дубликате по имени обновляет количество и цену."""
-        if products is not None:
-            for product in products:
-                if product.name == product_dict["name"]:
-                    product.quantity += int(product_dict["quantity"])
-                    new_price = float(product_dict["price"])
-                    if new_price > product.price:
-                        product.price = new_price
-                    return product
-
+    def new_product(cls, product_dict: dict) -> "Product":
+        """Создаёт товар из словаря с полями name, description, price, quantity."""
         return cls(
             name=product_dict["name"],
             description=product_dict["description"],

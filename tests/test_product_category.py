@@ -84,37 +84,6 @@ def test_product_new_product_from_dict() -> None:
     assert product.quantity == 3
 
 
-def test_product_new_product_merges_duplicate() -> None:
-    existing = Product("Наушники", "Беспроводные", 19990.0, 5)
-    products = [existing]
-
-    merged = Product.new_product(
-        {
-            "name": "Наушники",
-            "description": "Другие",
-            "price": 15000.0,
-            "quantity": 2,
-        },
-        products,
-    )
-
-    assert merged is existing
-    assert existing.quantity == 7
-    assert existing.price == 19990.0
-
-    Product.new_product(
-        {
-            "name": "Наушники",
-            "description": "Другие",
-            "price": 25000.0,
-            "quantity": 1,
-        },
-        products,
-    )
-    assert existing.quantity == 8
-    assert existing.price == 25000.0
-
-
 def test_product_format_for_catalog_fractional_price() -> None:
     product = Product("Молоко", "2.5%", 89.90, 12)
 
