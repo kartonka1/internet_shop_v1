@@ -1,42 +1,42 @@
-"""Точка входа для демонстрации домашней работы по Product и Category."""
+"""Точка входа для демонстрации домашней работы по Product и Category.
+
+Этот файл демонстрирует работу классов Product и Category, включая:
+- Создание товаров с различными параметрами
+- Строковое представление товаров (__str__)
+- Создание категории с товарами
+- Строковое представление категории (__str__)
+- Сложение товаров для получения общей стоимости (__add__)
+"""
 
 from src.category import Category
 from src.product import Product
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+    # Создаем три товара с разными характеристиками
     product1 = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5)
     product2 = Product("Iphone 15", "512GB, Gray space", 210000.0, 8)
     product3 = Product("Xiaomi Redmi Note 11", "1024GB, Синий", 31000.0, 14)
 
+    # Демонстрируем строковое представление товаров (__str__)
+    print(str(product1))
+    print(str(product2))
+    print(str(product3))
+
+    # Создаем категорию "Смартфоны" и добавляем в неё все товары
     category1 = Category(
         "Смартфоны",
         "Смартфоны, как средство не только коммуникации, но и получения дополнительных функций для удобства жизни",
-        [product1, product2, product3],
+        [product1, product2, product3]
     )
 
+    # Демонстрируем строковое представление категории (__str__)
+    print(str(category1))
+
+    # Выводим список всех товаров в категории через свойство products
     print(category1.products)
-    product4 = Product('55" QLED 4K', "Фоновая подсветка", 123000.0, 7)
-    category1.add_product(product4)
-    print(category1.products)
-    print(category1.product_count)
 
-    new_product = Product.new_product(
-        {
-            "name": "Samsung Galaxy S23 Ultra",
-            "description": "256GB, Серый цвет, 200MP камера",
-            "price": 180000.0,
-            "quantity": 5,
-        }
-    )
-    print(new_product.name)
-    print(new_product.description)
-    print(new_product.price)
-    print(new_product.quantity)
-
-    new_product.price = 800
-    print(new_product.price)
-
-    new_product.price = -100
-    print(new_product.price)
-    new_product.price = 0
-    print(new_product.price)
+    # Демонстрируем сложение товаров (__add__)
+    # Результат: сумма произведений цены на количество для обоих товаров
+    print(product1 + product2)  # 180000 * 5 + 210000 * 8 = 900000 + 1680000 = 2580000
+    print(product1 + product3)  # 180000 * 5 + 31000 * 14 = 900000 + 434000 = 1334000
+    print(product2 + product3)  # 210000 * 8 + 31000 * 14 = 1680000 + 434000 = 2114000
