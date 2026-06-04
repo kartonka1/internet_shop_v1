@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from src.category import Category
+from src.category_iterator import CategoryIterator
 from src.product import Product
 from src.utils.products_loader import load_categories_from_json
 
@@ -143,3 +144,59 @@ def test_load_categories_from_json() -> None:
     assert "Остаток: 7 шт." in categories[1].products
     assert Category.category_count == 2
     assert Category.product_count == 4
+
+
+def test_product_str() -> None:
+    product = Product("iPhone 15", "128 ГБ", 89990.50, 14)
+    result = str(product)
+    assert result == "iPhone 15, 89990.5 руб. Остаток: 14 шт."
+
+
+def test_product_str_integer_price() -> None:
+    product = Product("Наушники", "Беспроводные", 19990.0, 8)
+    result = str(product)
+    assert result == "Наушники, 19990 руб. Остаток: 8 шт."
+
+
+def test_product_add() -> None:
+    product1 = Product("Товар 1", "Описание", 100.0, 10)
+    product2 = Product("Товар 2", "Описание", 200.0, 2)
+    result = product1 + product2
+    assert result == 100.0 * 10 + 200.0 * 2  # 1000 + 400 = 1400
+
+
+def test_category_str() -> None:
+    product1 = Product("Товар 1", "Описание", 100.0, 10)
+    product2 = Product("Товар 2", "Описание", 200.0, 5)
+    category = Category("Электроника", "Описание", [product1, product2])
+    result = str(category)
+    assert result == "Электроника, количество продуктов: 15 шт."
+
+
+def test_category_iterator() -> None:
+    product1 = Product("Товар 1", "Описание", 100.0, 10)
+    product2 = Product("Товар 2", "Описание", 200.0, 5)
+    product3 = Product("Товар 3", "Описание", 300.0, 3)
+    category = Category("Электроника", "Описание", [product1, product2, product3])
+
+    iterator = CategoryIterator(category)
+    products_list = list(iterator)
+
+    assert len(products_list) == 3
+    assert products_list[0] == product1
+    assert products_list[1] == product2
+    assert products_list[2] == product3
+
+
+def test_category_iterator_in_for_loop() -> None:
+    product1 = Product("Товар 1", "Описание", 100.0, 10)
+    product2 = Product("Товар 2", "Описание", 200.0, 5)
+    category = Category("Электроника", "Описание", [product1, product2])
+
+    products_from_loop = []
+    for product in CategoryIterator(category):
+        products_from_loop.append(product)
+
+    assert len(products_from_loop) == 2
+    assert products_from_loop[0] == product1
+    assert products_from_loop[1] == product2
