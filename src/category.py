@@ -22,6 +22,7 @@ class Category:
                 self.add_product(product)
 
     def add_product(self, product: Product) -> None:
+        # Защищаем список: сюда попадают только реальные товары и их наследники.
         if not isinstance(product, Product):
             raise TypeError("В категорию можно добавлять только товары")
         self.__products.append(product)

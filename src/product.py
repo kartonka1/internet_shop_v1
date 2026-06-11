@@ -52,6 +52,7 @@ class Product:
         return f"{self.name}, {_format_price(self.price)} руб. Остаток: {self.quantity} шт."
 
     def __add__(self, other: "Product") -> float:
+        # В этом задании можно складывать только товары одного конкретного класса.
         if type(self) is not type(other):
             raise TypeError("Складывать можно только товары одного класса")
         return self.price * self.quantity + other.price * other.quantity
