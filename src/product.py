@@ -108,4 +108,6 @@ class Product:
             Сумма произведений цены на количество для обоих товаров
             (цена1 * количество1 + цена2 * количество2)
         """
+        if type(self) is not type(other):
+            raise TypeError("Складывать можно только товары одного класса")
         return self.price * self.quantity + other.price * other.quantity

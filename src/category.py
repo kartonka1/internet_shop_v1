@@ -47,6 +47,8 @@ class Category:
         Примечания:
             Увеличивает счетчик product_count на 1
         """
+        if not isinstance(product, Product):
+            raise TypeError("В категорию можно добавлять только товары")
         self.__products.append(product)
         Category.product_count += 1
 
