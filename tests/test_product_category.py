@@ -6,7 +6,9 @@ import pytest
 
 from src.category import Category
 from src.category_iterator import CategoryIterator
+from src.lawn_grass import LawnGrass
 from src.product import Product
+from src.smartphone import Smartphone
 from src.utils.products_loader import load_categories_from_json
 
 PRODUCTS_JSON = Path(__file__).resolve().parents[1] / "data" / "products.json"
@@ -163,6 +165,56 @@ def test_product_add() -> None:
     product2 = Product("Товар 2", "Описание", 200.0, 2)
     result = product1 + product2
     assert result == 100.0 * 10 + 200.0 * 2  # 1000 + 400 = 1400
+
+
+def test_product_add_different_types_raises_type_error() -> None:
+    smartphone = Smartphone("Телефон", "Описание", 1000.0, 2, 90.0, "Model X", 128, "Черный")
+    grass = LawnGrass("Трава", "Описание", 100.0, 3, "Россия", "7 дней", "Зеленый")
+
+    with pytest.raises(TypeError):
+        _ = smartphone + grass
+
+
+def test_smartphone_initialization() -> None:
+    smartphone = Smartphone("Телефон", "Описание", 1000.0, 2, 90.0, "Model X", 128, "Черный")
+
+    assert smartphone.name == "Телефон"
+    assert smartphone.description == "Описание"
+    assert smartphone.price == 1000.0
+    assert smartphone.quantity == 2
+    assert smartphone.efficiency == 90.0
+    assert smartphone.model == "Model X"
+    assert smartphone.memory == 128
+    assert smartphone.color == "Черный"
+
+
+def test_lawn_grass_initialization() -> None:
+    grass = LawnGrass("Трава", "Описание", 100.0, 3, "Россия", "7 дней", "Зеленый")
+
+    assert grass.name == "Трава"
+    assert grass.description == "Описание"
+    assert grass.price == 100.0
+    assert grass.quantity == 3
+    assert grass.country == "Россия"
+    assert grass.germination_period == "7 дней"
+    assert grass.color == "Зеленый"
+
+
+def test_category_add_product_accepts_product_subclasses() -> None:
+    category = Category("Смартфоны", "Описание", [])
+    smartphone = Smartphone("Телефон", "Описание", 1000.0, 2, 90.0, "Model X", 128, "Черный")
+
+    category.add_product(smartphone)
+
+    assert category.products == "Телефон, 1000 руб. Остаток: 2 шт.\n"
+    assert Category.product_count == 1
+
+
+def test_category_add_product_rejects_non_product() -> None:
+    category = Category("Смартфоны", "Описание", [])
+
+    with pytest.raises(TypeError):
+        category.add_product("Not a product")
 
 
 def test_category_str() -> None:
