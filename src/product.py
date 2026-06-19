@@ -1,5 +1,8 @@
 """Модель продукта для домашней работы по каталогу."""
 
+from src.base_product import BaseProduct
+from src.repr_mixin import ReprMixin
+
 
 def _format_price(price: float) -> str:
     """Форматирует цену для вывода в каталоге."""
@@ -8,7 +11,7 @@ def _format_price(price: float) -> str:
     return str(price)
 
 
-class Product:
+class Product(ReprMixin, BaseProduct):
     """Представляет товар в каталоге магазина."""
 
     name: str
@@ -16,6 +19,7 @@ class Product:
     quantity: int
 
     def __init__(self, name: str, description: str, price: float, quantity: int) -> None:
+        super().__init__(name, description, price, quantity)
         self.name = name
         self.description = description
         self.quantity = quantity
