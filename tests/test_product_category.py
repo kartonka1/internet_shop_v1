@@ -37,6 +37,7 @@ def test_product_initialization() -> None:
 
 def test_product_price_setter_rejects_non_positive(capsys: pytest.CaptureFixture[str]) -> None:
     product = Product("Товар", "Описание", 1000.0, 1)
+    capsys.readouterr()  # Очищаем вывод от миксина
 
     product.price = 0
     captured = capsys.readouterr()
@@ -103,7 +104,8 @@ def test_category_initialization() -> None:
 
     assert category.name == "Аудио"
     assert category.description == "Звуковая техника"
-    assert category.products == "Наушники, 19990 руб. Остаток: 8 шт.\n"
+    assert len(category.products) == 1
+    assert category.products_string() == "Наушники, 19990 руб. Остаток: 8 шт.\n"
 
 
 def test_category_add_product() -> None:
@@ -112,7 +114,8 @@ def test_category_add_product() -> None:
 
     category.add_product(product)
 
-    assert category.products == "Колонка, 4990 руб. Остаток: 4 шт.\n"
+    assert len(category.products) == 1
+    assert category.products_string() == "Колонка, 4990 руб. Остаток: 4 шт.\n"
     assert Category.product_count == 1
 
 
@@ -140,10 +143,11 @@ def test_load_categories_from_json() -> None:
 
     assert len(categories) == 2
     assert categories[0].name == "Смартфоны"
-    assert categories[0].products.count("шт.") == 3
-    assert "Samsung Galaxy C23 Ultra, 180000 руб. Остаток: 5 шт." in categories[0].products
+    assert len(categories[0].products) == 3
+    products_str = categories[0].products_string()
+    assert "Samsung Galaxy C23 Ultra, 180000 руб. Остаток: 5 шт." in products_str
     assert categories[1].name == "Телевизоры"
-    assert "Остаток: 7 шт." in categories[1].products
+    assert "Остаток: 7 шт." in categories[1].products_string()
     assert Category.category_count == 2
     assert Category.product_count == 4
 
@@ -206,7 +210,8 @@ def test_category_add_product_accepts_product_subclasses() -> None:
 
     category.add_product(smartphone)
 
-    assert category.products == "Телефон, 1000 руб. Остаток: 2 шт.\n"
+    assert len(category.products) == 1
+    assert category.products_string() == "Телефон, 1000 руб. Остаток: 2 шт.\n"
     assert Category.product_count == 1
 
 
@@ -252,3 +257,50 @@ def test_category_iterator_in_for_loop() -> None:
     assert len(products_from_loop) == 2
     assert products_from_loop[0] == product1
     assert products_from_loop[1] == product2
+
+
+def test_repr_mixin_product_output(capsys: pytest.CaptureFixture[str]) -> None:
+    """Миксин выводит информацию о создании объекта Product."""
+    Product("TestProduct", "Description", 100.0, 5)
+    captured = capsys.readouterr()
+    assert "Product('TestProduct', 'Description', 100.0, 5)" in captured.out
+
+
+def test_repr_mixin_smartphone_output(capsys: pytest.CaptureFixture[str]) -> None:
+    """Миксин выводит информацию о создании объекта Smartphone."""
+    Smartphone("TestPhone", "Description", 1000.0, 2, 95.0, "Model X", 256, "Black")
+    captured = capsys.readouterr()
+    assert "Smartphone('TestPhone', 'Description', 1000.0, 2)" in captured.out
+
+
+def test_repr_mixin_lawn_grass_output(capsys: pytest.CaptureFixture[str]) -> None:
+    """Миксин выводит информацию о создании объекта LawnGrass."""
+    LawnGrass("TestGrass", "Description", 50.0, 10, "Russia", "7 days", "Green")
+    captured = capsys.readouterr()
+    assert "LawnGrass('TestGrass', 'Description', 50.0, 10)" in captured.out
+
+
+def test_base_product_is_abstract() -> None:
+    """BaseProduct является абстрактным классом и не может быть инстанцирован."""
+    from src.base_product import BaseProduct
+    with pytest.raises(TypeError):
+        BaseProduct()  # type: ignore
+
+
+def test_product_inherits_from_base_product() -> None:
+    """Product наследуется от BaseProduct."""
+    from src.base_product import BaseProduct
+    product = Product("Test", "Description", 100.0, 5)
+    assert isinstance(product, BaseProduct)
+
+
+def test_smartphone_inherits_from_product() -> None:
+    """Smartphone наследуется от Product."""
+    smartphone = Smartphone("Test", "Description", 1000.0, 2, 95.0, "Model", 256, "Black")
+    assert isinstance(smartphone, Product)
+
+
+def test_lawn_grass_inherits_from_product() -> None:
+    """LawnGrass наследуется от Product."""
+    grass = LawnGrass("Test", "Description", 50.0, 10, "Russia", "7 days", "Green")
+    assert isinstance(grass, Product)

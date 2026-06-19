@@ -29,7 +29,10 @@ class Category:
         Category.product_count += 1
 
     @property
-    def products(self) -> str:
+    def products(self) -> list[Product]:
+        return self.__products
+
+    def products_string(self) -> str:
         result = ""
         for product in self.__products:
             result += product.format_for_catalog()
