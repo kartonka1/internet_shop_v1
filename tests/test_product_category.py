@@ -35,6 +35,25 @@ def test_product_initialization() -> None:
     assert product.quantity == 14
 
 
+def test_product_initialization_with_zero_quantity_raises_error() -> None:
+    with pytest.raises(ValueError, match="Товар с нулевым количеством не может быть добавлен"):
+        Product("Бракованный товар", "Неверное количество", 1000.0, 0)
+
+
+def test_category_middle_price_returns_average_price() -> None:
+    product1 = Product("Товар 1", "Описание", 100.0, 1)
+    product2 = Product("Товар 2", "Описание", 200.0, 1)
+    category = Category("Тестовая категория", "Описание", [product1, product2])
+
+    assert category.middle_price() == 150.0
+
+
+def test_category_middle_price_returns_zero_for_empty_category() -> None:
+    category = Category("Пустая категория", "Описание", [])
+
+    assert category.middle_price() == 0
+
+
 def test_product_price_setter_rejects_non_positive(capsys: pytest.CaptureFixture[str]) -> None:
     product = Product("Товар", "Описание", 1000.0, 1)
     capsys.readouterr()  # Очищаем вывод от миксина
